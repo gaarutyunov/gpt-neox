@@ -9,7 +9,7 @@
 #SBATCH --mail-user=gaarutyunov@edu.hse.ru
 #SBATCH --mail-type=ALL
 
-
+source ~/.bashrc
 module restore default
 
 #Executable
