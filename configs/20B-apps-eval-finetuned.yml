@@ -2,14 +2,14 @@
   # Tokenizer /  checkpoint settings - you will need to change these to the location you have them saved in
   "vocab-file": "./20B_checkpoints/20B_tokenizer.json",
   "save": "./20B_checkpoints_finetuned",
-  "load": "./20B_checkpoints",
+  "load": "./20B_checkpoints_finetuned",
 
   # If finetuning, edit the following to the location of your finetuning dataset:
   "data-path": "./data/apps_text_document",
 
   # parallelism settings ( you will want to change these based on your cluster setup, ideally scheduling pipeline stages
   # across the node boundaries )
-  "pipe-parallel-size": 4,
+  "pipe-parallel-size": 1,
   "model-parallel-size": 2,
 
   # model settings
@@ -102,7 +102,4 @@
   "tokenizer_type": "HFTokenizer",
   "tensorboard-dir": "./tensorboard",
   "log-dir": "./logs",
-
-  ### ADDITIONAL CONFIG ###
-  "hostfile": "hostfile",
 }
