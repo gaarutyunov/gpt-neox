@@ -24,4 +24,4 @@ nvcc --version
 echo "PATH=${PATH}" > ~/.deepspeed_env
 
 python ./megatron/fused_kernels/setup.py install
-python ./deepy.py evaluate.py -d configs 20B-eval-finetuned.yml --eval_tasks apps
+python ./deepy.py evaluate.py -d configs 20B-apps-eval-finetuned.yml --eval_tasks apps_introductory apps_interview apps_competition

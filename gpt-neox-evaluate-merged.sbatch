@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --cpus-per-gpu=4
-#SBATCH --job-name="neox-eval"
-#SBATCH --time=0-04:00
-#SBATCH --gpus=2
-#SBATCH --gpus-per-node=2
+#SBATCH --job-name="neox-merged"
+#SBATCH --time=1-12:00
+#SBATCH --gpus=1
+#SBATCH --gpus-per-node=1
 #SBATCH --nodes=1
-#SBATCH --output="gpt-neox-eval-"%j.out
-#SBATCH --error="gpt-neox-eval-"%j.err
+#SBATCH --output="gpt-neox-merged-"%j.out
+#SBATCH --error="gpt-neox-merged-"%j.err
 #SBATCH --constraint="type_e"
 #SBATCH --mail-user=gaarutyunov@edu.hse.ru
 #SBATCH --mail-type=ALL
@@ -24,4 +24,4 @@ nvcc --version
 echo "PATH=${PATH}" > ~/.deepspeed_env
 
 python ./megatron/fused_kernels/setup.py install
-python ./deepy.py evaluate.py -d configs 20B-apps-eval.yml --eval_tasks apps_introductory apps_interview apps_competition
+python ./deepy.py evaluate.py -d 20B_checkpoints_finetuned_merged/configs 20B.yml --eval_tasks apps_introductory apps_interview apps_competition

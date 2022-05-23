@@ -1,5 +1,7 @@
 import argparse
 import os
+import pathlib
+
 import torch
 import yaml
 import shutil
@@ -170,9 +172,19 @@ def merge_model_weights(input_checkpoint_path, output_checkpoint_path):
     pbar.set_description("Done.")
 
 
-def merge(input_dir, output_dir):
-    input_checkpoint_path = os.path.join(input_dir, "global_step150000")
-    output_checkpoint_path = os.path.join(output_dir, "global_step150000")
+def merge(input_dir, output_dir, input_cfg, output_cfg):
+    out_dir = None
+
+    for f in pathlib.Path(input_dir).iterdir():
+        if f.is_file():
+            continue
+        if f.is_dir() and f.name.startswith('global_step'):
+            out_dir = f
+
+    assert out_dir is not None, "input dir doesn't contain checkpoints"
+
+    input_checkpoint_path = os.path.join(input_dir, out_dir.name)
+    output_checkpoint_path = os.path.join(output_dir, out_dir.name)
     os.makedirs(output_checkpoint_path, exist_ok=True)
     os.makedirs(os.path.join(output_dir, "configs"), exist_ok=True)
     for i in range(8):
@@ -183,20 +195,20 @@ def merge(input_dir, output_dir):
                 output_checkpoint_path, f"mp_rank_{i:02d}_model_states.pt"),
         )
     modify_config(
-        input_config_path=os.path.join(input_dir, "configs", "20B.yml"),
-        output_config_path=os.path.join(output_dir, "configs", "20B.yml"),
+        input_config_path=input_cfg,
+        output_config_path=output_cfg,
         output_dir=output_dir,
     )
-    # merge_model_weights(
-    #     input_checkpoint_path=input_checkpoint_path,
-    #     output_checkpoint_path=output_checkpoint_path,
-    # )
+    merge_model_weights(
+        input_checkpoint_path=input_checkpoint_path,
+        output_checkpoint_path=output_checkpoint_path,
+    )
     shutil.copyfile(
         os.path.join(input_dir, "20B_tokenizer.json"),
         os.path.join(output_dir, "20B_tokenizer.json"),
     )
     with open(os.path.join(output_dir, "latest"), "w") as f:
-        f.write("global_step150000")
+        f.write(out_dir.name)
 
 
 def main():
@@ -205,8 +217,12 @@ def main():
                         help='Checkpoint dir, which should contain (e.g. a folder named "global_step150000")')
     parser.add_argument('--output_dir', type=str,
                         help='Output dir, to save the 1-GPU weights configs')
+    parser.add_argument('--input_cfg', type=str,
+                        help='Input config', default="configs/20B.yml")
+    parser.add_argument('--output_cfg', type=str,
+                        help='Output config', default="configs/20B.yml")
     args = parser.parse_args()
-    merge(args.input_dir, args.output_dir)
+    merge(args.input_dir, args.output_dir, args.input_cfg, args.output_cfg)
 
 
 if __name__ == '__main__':

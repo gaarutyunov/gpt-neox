@@ -22,4 +22,4 @@ nvcc --version
 echo "PATH=${PATH}" > ~/.deepspeed_env
 
 python ./megatron/fused_kernels/setup.py install
-python ./deepy.py train.py configs/20B.yml
+python ./deepy.py train.py configs/20B-apps.yml
